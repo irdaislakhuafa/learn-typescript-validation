@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z, ZodError } from "zod"
 
 describe("zod", () => {
 	it("example string validations", () => {
@@ -42,5 +42,29 @@ describe("zod", () => {
 			.max(new Date(2024, 11, 31), { message: "too young!" }) // 31 Dec 2024
 
 		expect(birthDateSceme.parse("2002-01-01")).toStrictEqual(new Date(2002, 0, 2, -17)) // 01 Jan 2002
+	})
+
+	it("handle validation errors", () => {
+		const emailSchema = z.string().email().min(3).max(10)
+
+		try {
+			emailSchema.parse("xx")
+		} catch (err) {
+			if (err instanceof ZodError) {
+				err.errors.forEach(err => console.log(err.message))
+			}
+		}
+	})
+
+	it("handle validation errors without exception", () => {
+		const emailSchema = z.string().email().min(3).max(10)
+
+		const result = emailSchema.safeParse("xx")
+
+		if (result.success) {
+			console.log(result.data)
+		} else {
+			result.error.errors.forEach(async (err) => console.log(err.message))
+		}
 	})
 })
