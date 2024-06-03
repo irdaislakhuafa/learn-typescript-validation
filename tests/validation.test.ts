@@ -118,4 +118,54 @@ describe("zod", () => {
 			console.log(result.data)
 		}
 	})
+
+	it("validation array", () => {
+		const strArraySchema = z.array(
+			z.string().min(1).email(),
+		).min(1).max(10);
+
+		type StrArray = z.infer<typeof strArraySchema>;
+
+		const request: StrArray = ["i@gmail.com", "j@gmail.com"];
+		const result = strArraySchema.safeParse(request)
+
+		if (!result.success) {
+			result.error.errors.forEach(async v => console.log(`${v.path.join(' -> ')} ${v.message.toLowerCase()}`))
+		} else {
+			console.log(result.data)
+		}
+	})
+
+	it("validation set", () => {
+		const strSetSchema = z.set(
+			z.string().email().min(1)
+		).min(1).max(10);
+
+		type StrSet = z.infer<typeof strSetSchema>
+
+		const request: StrSet = new Set(["i@gmail.com", "i@gmail.com"])
+		const result = strSetSchema.safeParse(request)
+
+		if (!result.success) {
+			result.error.errors.forEach(async v => console.log(v))
+		} else {
+			console.log(result.data)
+		}
+	})
+
+	it("validation map", () => {
+		const mapSchema = z.map(z.string(), z.string().email())
+		const request = new Map<string, string>([
+			["i", "i@gmail.com"],
+			["j", "j@gmail.com"],
+			["k", "kgmail.com"],
+		])
+		const result = mapSchema.safeParse(request)
+
+		if (!result.success) {
+			result.error.errors.forEach(async v => console.log(`${v.path.join(' -> ')} ${v.message.toLowerCase()}`))
+		} else {
+			console.log(result.data)
+		}
+	})
 })
