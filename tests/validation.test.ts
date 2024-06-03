@@ -67,4 +67,55 @@ describe("zod", () => {
 			result.error.errors.forEach(async (err) => console.log(err.message))
 		}
 	})
+
+	it("validate object", () => {
+		const loginSchema = z.object({
+			username: z.string().email().min(3),
+			password: z.string().min(6).max(10),
+		})
+
+		const request = {
+			username: "i@gmail.com",
+			password: "123456",
+			ignore: "ignore this",
+			name: "xx" // ignore
+		}
+
+		const result = loginSchema.safeParse(request)
+		if (result.success) {
+			console.log(result.data)
+		} else {
+			result.error.errors.forEach(async v => console.log(v))
+		}
+	})
+
+	it("validate nested objects", () => {
+		const createUserSchema = z.object({
+			id: z.string().max(100),
+			name: z.string().max(100).min(1),
+			address: z.object({
+				country: z.string(),
+				city: z.string().optional(),
+			})
+		})
+
+		type User = z.infer<typeof createUserSchema>
+
+		const request: User = {
+			id: "xxx",
+			name: "irda",
+			address: {
+				// city: "tuban",
+				country: "indonesia"
+			}
+		}
+
+		const result = createUserSchema.safeParse(request)
+
+		if (!result.success) {
+			result.error.errors.forEach(async v => console.log(`${v.path.join(" -> ")} ${v.message.toLowerCase()}`))
+		} else {
+			console.log(result.data)
+		}
+	})
 })
