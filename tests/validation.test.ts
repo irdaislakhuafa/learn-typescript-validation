@@ -132,7 +132,24 @@ describe("zod", () => {
 		if (!result.success) {
 			result.error.errors.forEach(async v => console.log(`${v.path.join(' -> ')} ${v.message.toLowerCase()}`))
 		} else {
-			result.data.forEach(async v => console.log(v))
+			console.log(result.data)
+		}
+	})
+
+	it("validation set", () => {
+		const strSetSchema = z.set(
+			z.string().email().min(1)
+		).min(1).max(10);
+
+		type StrSet = z.infer<typeof strSetSchema>
+
+		const request: StrSet = new Set(["i@gmail.com", "i@gmail.com"])
+		const result = strSetSchema.safeParse(request)
+
+		if (!result.success) {
+			result.error.errors.forEach(async v => console.log(v))
+		} else {
+			console.log(result.data)
 		}
 	})
 })
