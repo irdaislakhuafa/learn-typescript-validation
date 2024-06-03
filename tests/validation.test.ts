@@ -168,4 +168,26 @@ describe("zod", () => {
 			console.log(result.data)
 		}
 	})
+
+
+	it("validate with custom error message", () => {
+		const loginSchema = z.object({
+			username: z.string().email("username must email format").min(3, "minimum value is 3"),
+			password: z.string().min(6, "minimum value is 6").max(10, "maximum value is 10"),
+		})
+
+		const request = {
+			username: "igmail.com",
+			password: "123456",
+			ignore: "ignore this",
+			name: "xx" // ignore
+		}
+
+		const result = loginSchema.safeParse(request)
+		if (result.success) {
+			console.log(result.data)
+		} else {
+			result.error.errors.forEach(async v => console.log(`${v.path.join(' -> ')}: ${v.message}`))
+		}
+	})
 })
