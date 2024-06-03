@@ -152,4 +152,20 @@ describe("zod", () => {
 			console.log(result.data)
 		}
 	})
+
+	it("validation map", () => {
+		const mapSchema = z.map(z.string(), z.string().email())
+		const request = new Map<string, string>([
+			["i", "i@gmail.com"],
+			["j", "j@gmail.com"],
+			["k", "kgmail.com"],
+		])
+		const result = mapSchema.safeParse(request)
+
+		if (!result.success) {
+			result.error.errors.forEach(async v => console.log(`${v.path.join(' -> ')} ${v.message.toLowerCase()}`))
+		} else {
+			console.log(result.data)
+		}
+	})
 })
