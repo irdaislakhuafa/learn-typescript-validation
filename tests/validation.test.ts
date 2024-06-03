@@ -88,4 +88,34 @@ describe("zod", () => {
 			result.error.errors.forEach(async v => console.log(v))
 		}
 	})
+
+	it("validate nested objects", () => {
+		const createUserSchema = z.object({
+			id: z.string().max(100),
+			name: z.string().max(100).min(1),
+			address: z.object({
+				country: z.string(),
+				city: z.string(),
+			})
+		})
+
+		type User = z.infer<typeof createUserSchema>
+
+		const request: User = {
+			id: "xxx",
+			name: "irda",
+			address: {
+				city: "tuban",
+				country: "indonesia"
+			}
+		}
+
+		const result = createUserSchema.safeParse(request)
+
+		if (!result.success) {
+			result.error.errors.forEach(async v => console.log(`${v.path.join(" -> ")} ${v.message.toLowerCase()}`))
+		} else {
+			console.log(result.data)
+		}
+	})
 })
