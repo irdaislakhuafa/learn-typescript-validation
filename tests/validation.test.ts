@@ -67,4 +67,25 @@ describe("zod", () => {
 			result.error.errors.forEach(async (err) => console.log(err.message))
 		}
 	})
+
+	it("validate object", () => {
+		const loginSchema = z.object({
+			username: z.string().email().min(3),
+			password: z.string().min(6).max(10),
+		})
+
+		const request = {
+			username: "i@gmail.com",
+			password: "123456",
+			ignore: "ignore this",
+			name: "xx" // ignore
+		}
+
+		const result = loginSchema.safeParse(request)
+		if (result.success) {
+			console.log(result.data)
+		} else {
+			result.error.errors.forEach(async v => console.log(v))
+		}
+	})
 })
