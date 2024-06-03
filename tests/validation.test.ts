@@ -118,4 +118,21 @@ describe("zod", () => {
 			console.log(result.data)
 		}
 	})
+
+	it("validation array", () => {
+		const strArraySchema = z.array(
+			z.string().min(1).email(),
+		).min(1).max(10);
+
+		type StrArray = z.infer<typeof strArraySchema>;
+
+		const request: StrArray = ["i@gmail.com", "j@gmail.com"];
+		const result = strArraySchema.safeParse(request)
+
+		if (!result.success) {
+			result.error.errors.forEach(async v => console.log(`${v.path.join(' -> ')} ${v.message.toLowerCase()}`))
+		} else {
+			result.data.forEach(async v => console.log(v))
+		}
+	})
 })
