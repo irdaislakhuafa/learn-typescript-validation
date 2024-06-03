@@ -35,4 +35,12 @@ describe("zod", () => {
 		expect(user.balance.parse(100)).toBe(100)
 		expect(user.balance.parse("100000")).toBe(100_000)
 	})
+
+	it("date validation", () => {
+		const birthDateSceme = z.coerce.date()
+			.min(new Date(2000, 0, 1), { message: "too old!" }) // 01 Jan 2000
+			.max(new Date(2024, 11, 31), { message: "too young!" }) // 31 Dec 2024
+
+		expect(birthDateSceme.parse("2002-01-01")).toStrictEqual(new Date(2002, 0, 2, -17)) // 01 Jan 2002
+	})
 })
