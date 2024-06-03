@@ -95,7 +95,7 @@ describe("zod", () => {
 			name: z.string().max(100).min(1),
 			address: z.object({
 				country: z.string(),
-				city: z.string(),
+				city: z.string().optional(),
 			})
 		})
 
@@ -105,7 +105,7 @@ describe("zod", () => {
 			id: "xxx",
 			name: "irda",
 			address: {
-				city: "tuban",
+				// city: "tuban",
 				country: "indonesia"
 			}
 		}
