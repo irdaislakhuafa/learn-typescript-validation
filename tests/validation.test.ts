@@ -225,4 +225,43 @@ describe("zod", () => {
 			console.log(result.data)
 		}
 	})
+
+	it('example custom validation', () => {
+		const loginSchema = z.object({
+			email: z.string().email().transform((s, ctx): string => {
+				if (s !== s.toUpperCase()) {
+					ctx.addIssue({
+						code: z.ZodIssueCode.custom,
+						message: "must be uppercase"
+					})
+					return z.NEVER
+				}
+
+				return s
+			}),
+			password: z.string().min(6).max(8),
+		})
+
+		type LoginSchema = z.infer<typeof loginSchema>
+
+		let request: LoginSchema = {
+			email: "i@gmail.com",
+			password: "1234578"
+		}
+
+		let result = loginSchema.safeParse(request)
+		expect(result.success).toBeFalsy()
+		expect(result.error?.errors.map(v => v.message).join(",")).toBe("must be uppercase")
+
+		request = {
+			email: "I@GMAIL.COM",
+			password: "12345678"
+		}
+
+		result = loginSchema.safeParse(request)
+		expect(result.success).toBeTruthy()
+		expect(result.data).toBeTruthy()
+		expect(result.data?.email).toBe("I@GMAIL.COM")
+
+	})
 })
