@@ -190,4 +190,32 @@ describe("zod", () => {
 			result.error.errors.forEach(async v => console.log(`${v.path.join(' -> ')}: ${v.message}`))
 		}
 	})
+
+	it("optional fields validation", () => {
+		const registerSchema = z.object({
+			username: z.string().email().min(1),
+			password: z.string().min(6).max(10),
+			firstName: z.string().min(1).max(255),
+			lastName: z.string().min(1).max(10).optional(),
+		})
+
+		type RegisterSchema = z.infer<typeof registerSchema>
+
+		let request: RegisterSchema = {
+			firstName: "irda",
+			username: "i@gmail.com",
+			password: "123456"
+		}
+
+		let result = registerSchema.safeParse(request)
+		expect(result.success).toBe(true)
+		expect(result.error).toBe(undefined)
+		expect(result.data).toBeTruthy()
+
+		if (!result.success) {
+			result.error.errors.forEach(async v => console.log(`${v.path.join(' -> ')}: ${v.message.toLowerCase()}`))
+		} else {
+			console.log(result.data)
+		}
+	})
 })
