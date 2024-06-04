@@ -225,4 +225,13 @@ describe("zod", () => {
 			console.log(result.data)
 		}
 	})
+
+	it("validate and transform data after validation", async () => {
+		const schema = z.string().transform((s): string => s.toUpperCase().trim())
+
+		const result = schema.safeParse("i@gmail.com   ")
+		expect(result.success).toBeTruthy()
+		expect(result.error).toBeFalsy()
+		expect(result.data).toBe("I@GMAIL.COM")
+	})
 })
