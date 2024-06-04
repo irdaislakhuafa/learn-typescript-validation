@@ -197,12 +197,19 @@ describe("zod", () => {
 			password: z.string().min(6).max(10),
 			firstName: z.string().min(1).max(255),
 			lastName: z.string().min(1).max(10).optional(),
-		})
+		});
 
-		type RegisterSchema = z.infer<typeof registerSchema>
+		type RegisterSchema = z.infer<typeof registerSchema>;
+
+		const getRandomInt = (min: number, max: number): number => {
+			min = Math.ceil(min);
+			max = Math.floor(max);
+			return Math.floor((Math.random() * (max - min + 1)) + min);
+		}
 
 		let request: RegisterSchema = {
 			firstName: "irda",
+			lastName: getRandomInt(1, 10) % 2 == 0 ? "ia" : undefined,
 			username: "i@gmail.com",
 			password: "123456"
 		}
